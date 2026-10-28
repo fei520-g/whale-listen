@@ -1,0 +1,14 @@
+version: 3.0.3
+apkFileName: whale-music.apk
+isFrameworkApk: false
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 26
+  targetSdkVersion: 34
+versionInfo:
+  versionCode: 5
+  versionName: 0.2.0-beta.3
+doNotCompress:
+- arsc

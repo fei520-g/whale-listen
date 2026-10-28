@@ -1,0 +1,14 @@
+private/
+build/
+dist/
+testing/
+node_modules/
+__pycache__/
+*.pyc
+*.apk
+*.jks
+*.keystore
+*.dpapi
+*.pem
+*.key
+.env

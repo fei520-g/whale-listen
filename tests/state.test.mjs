@@ -1,0 +1,10 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {summarizeMusic,readMusic} from '../server/music-state.mjs';
+const now=1800000000000,state={receivedAtMs:now,observedAtMs:now,active:true,package:'com.kugou.android',title:'曲目',artist:'歌手',album:'专辑',state:'playing',positionMs:10000,durationMs:100000,speed:1};
+test('missing state is not invented',()=>assert.equal(summarizeMusic(null,now).available,false));
+test('offline and stale music is not presented as currently playing',()=>{assert.equal(summarizeMusic(state,now+91000).available,false);assert.equal(summarizeMusic(state,now-10000).available,false);});
+test('delayed upload does not make old phone state fresh',()=>assert.equal(summarizeMusic({...state,observedAtMs:now-95000},now).available,false));
+test('playing progress is estimated and bounded',()=>{let r=summarizeMusic(state,now+2000);assert.equal(r.positionMs,12000);assert.equal(r.positionEstimated,true);r=summarizeMusic({...state,positionMs:99500},now+2000);assert.equal(r.positionMs,100000);});
+test('paused and unknown positions stay accurate',()=>{assert.equal(summarizeMusic({...state,state:'paused'},now+2000).positionMs,10000);assert.equal(summarizeMusic({...state,positionMs:null},now).positionMs,null);});
+test('no audio or lyric capabilities claimed',()=>assert.equal(summarizeMusic(state,now).lyricsAvailable,false));
+test('disconnected snapshot has no old title',()=>{const r=summarizeMusic({...state,active:false},now);assert.equal(r.active,false);assert.equal(r.title,undefined);});
+test('missing file handled without tool crash',()=>assert.equal(readMusic('no-such-music-file',now).reason,'not_connected'));
